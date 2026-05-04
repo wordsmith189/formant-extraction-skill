@@ -93,6 +93,23 @@ Each sub-skill writes its outputs next to its inputs, so chaining
 them by hand gives you the same artifacts as the meta-skill, minus
 the review gates.
 
+### 4. Batch processing
+
+For a set of recordings, run the full pipeline on one file before
+starting the next — laterally through the pipeline, not vertically
+through the stack. Sample prompt:
+
+> **I have `interview1.wav`, `interview2.wav`, and `interview3.wav`
+> in the current directory. For each one in turn, run
+> `/formant-extraction` end-to-end before moving to the next file.**
+
+Going one file at a time means you catch transcription or
+diarization problems on file 1 before they propagate through three
+stages on every other file in the batch. The gates at transcription
+and alignment exist for that reason; processing the whole batch
+through `/transcribe-en` first would either bypass the gates or stall
+the whole batch on the first review pause.
+
 ## Third-party tools and licenses
 
 This toolkit invokes several external tools. None ship with the repo;
