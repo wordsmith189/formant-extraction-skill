@@ -33,41 +33,53 @@ columns by name, not by position past 16.
 ## Inputs
 
 1. **Audio** — the recording the TextGrid was aligned to.
-2. **Aligned TextGrid** — output of `align-en`. Tier names indicate
-   which extractor is valid:
-   - `<spk> - words` + `<spk> - phones`  → from `align-en --backend fave` → either extractor accepts.
-   - `words` + `phones`                  → from `align-en --backend webmaus` → only `praat` extractor accepts.
+2. **Aligned TextGrid** — output of `align-en`. Both backends produce
+   tiers named `words` and `phones`; they differ in the phone label
+   set, not in tier names. The valid extractor is determined by the
+   phone label set, not by the tier name:
+
+   | Phone label set                        | Came from                | Valid extractors      |
+   |----------------------------------------|--------------------------|-----------------------|
+   | ARPA — `AA1`, `IH0`, `B`, …            | `align-en --backend fave` (MFA) | `fave` or `praat` |
+   | X-SAMPA — `i:`, `{`, `@`, `dZ`, …      | `align-en --backend webmaus`     | `praat` only      |
 
 ## Extractor selection rule
 
-Reject `--extractor fave` if the TextGrid has tier names `words` /
-`phones` (no speaker prefix). FAVE-extract requires MFA's specific
-`<spk> - phones` naming, plus ARPA labels with stress digits. Accepting
-WebMAUS X-SAMPA output silently would crash inside FAVE-extract or
-produce nonsense.
+`--extractor fave` is only valid when the phone tier contains ARPA
+labels (uppercase letters with optional stress digit). FAVE-extract
+expects ARPA + the FAVE/MFA TextGrid format and would either crash or
+produce nonsense on X-SAMPA input. Reject the combination *before*
+invoking FAVE-extract.
 
-Detection (Python pre-flight):
+Tier names alone are no longer a reliable signal — MFA's
+`--single_speaker` mode also emits bare `words` / `phones` tier names
+(the same names the WebMAUS branch uses after rename). Detection must
+peek at phone labels:
 
 ```python
 import re
-content = open(textgrid).read()
-tier_names = re.findall(r'name = "(.*?)"', content)
-fave_tiers_present = any(re.match(r".+ - phones$", t) for t in tier_names)
-plain_phones_present = "phones" in tier_names and "words" in tier_names
 
-if extractor == "fave" and not fave_tiers_present:
+content = open(textgrid).read()
+# pull phone labels from the second `IntervalTier` block (… very
+# loosely; see scripts/run_praat_extractor.py:_phones_block_labels for
+# the production version)
+labels = re.findall(r'text = "([^"]+)"', content.split("phones")[-1])
+arpa_share = sum(1 for lab in labels if re.match(r"^[A-Z]+\d?$", lab)) / max(len(labels), 1)
+phoneset = "arpa" if arpa_share >= 0.8 else "xsampa"
+
+if extractor == "fave" and phoneset != "arpa":
     sys.exit(
-        "ERROR: --extractor fave requires MFA-style tier names "
-        "('<spk> - phones'). Found: " + ", ".join(tier_names) +
-        ". Either re-run align-en with --backend fave, or use "
-        "--extractor praat."
+        "ERROR: --extractor fave needs ARPA labels (e.g. AA1, IH0). "
+        f"Detected phoneset={phoneset}. Use --extractor praat with "
+        "WebMAUS-aligned TextGrids, or re-run align-en with --backend fave."
     )
 ```
 
-The Praat extractor (`run_praat_extractor.py`) does the same detection
-and self-aborts if it can't find usable tiers. The skill must run the
-check **before** invoking either extractor so the error message is
-clean.
+`run_praat_extractor.py` does this detection in `detect_backend()`
+(see `_phones_block_labels` and `ARPA_LABEL_RE`) and self-aborts if
+the labels don't fit either set. The meta-skill must run the
+extractor-vs-phoneset check **before** invoking either extractor so
+the error message is clean.
 
 ## Prerequisites
 

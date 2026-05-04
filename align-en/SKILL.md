@@ -191,8 +191,9 @@ Confirm the output TextGrid exists, is non-empty, and contains the
 expected tiers (see Output table at the top). Print:
 
 - Output path
-- Number of word intervals (in `<spk> - words` or `words`)
-- Number of phone intervals (in `<spk> - phones` or `phones`)
+- Number of intervals in the `words` tier
+- Number of intervals in the `phones` tier
+- Phone label set detected (ARPA for the fave backend, X-SAMPA for webmaus)
 - Any chunks that failed (webmaus backend) or OOV words (fave backend)
 
 ### Step 4 — Cleanup

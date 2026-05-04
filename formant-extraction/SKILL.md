@@ -97,10 +97,10 @@ Apply in this order before invoking any sub-skill:
 2. **`--backend` × `--extractor` compatibility.** If the user passed
    `--backend webmaus --extractor fave`, abort before transcription:
 
-       ERROR: --extractor fave needs MFA-style ARPA tier names. The
-       webmaus backend produces X-SAMPA tiers ('words' / 'phones')
-       that FAVE-extract cannot read. Use --extractor praat with
-       --backend webmaus, or switch to --backend fave.
+       ERROR: --extractor fave requires ARPA labels with stress digits
+       (e.g. AA1, IH0). The webmaus backend produces X-SAMPA labels
+       (e.g. i:, {, @) that FAVE-extract cannot read. Use --extractor
+       praat with --backend webmaus, or switch to --backend fave.
 
 3. **Default `--extractor`** from `--backend` if the user didn't pick
    one (`fave→fave`, `webmaus→praat`).

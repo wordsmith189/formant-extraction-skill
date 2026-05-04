@@ -18,7 +18,7 @@ v1 covers English only. Bilingual support is planned and will reuse
 
 ```bash
 # 1. install (one-time)
-pip3 install requests soundfile pyyaml \
+pip3 install requests soundfile pyyaml numpy \
     faster-whisper speechbrain scikit-learn torchaudio
 brew install ffmpeg praat                 # or apt-get install ffmpeg + build praat
 

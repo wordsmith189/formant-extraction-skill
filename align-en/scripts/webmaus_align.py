@@ -284,18 +284,23 @@ def align_textgrid(audio: Path, textgrid: Path, workdir: Path) -> tuple[str, lis
             tg_text = call_mausbasic(chunk_wav, chunk["text"])
             chunk_tiers = parse_textgrid(tg_text)
             shift = chunk["xmin"]
-            for iv in chunk_tiers.get("ORT-MAU", []):
-                ort_mau_all.append({
-                    "xmin": iv["xmin"] + shift,
-                    "xmax": iv["xmax"] + shift,
-                    "text": iv["text"],
-                })
-            for iv in chunk_tiers.get("MAU", []):
-                mau_all.append({
-                    "xmin": iv["xmin"] + shift,
-                    "xmax": iv["xmax"] + shift,
-                    "text": iv["text"],
-                })
+            for tier_key, bucket in (("ORT-MAU", ort_mau_all), ("MAU", mau_all)):
+                for iv in chunk_tiers.get(tier_key, []):
+                    new_xmin = iv["xmin"] + shift
+                    new_xmax = iv["xmax"] + shift
+                    # Clamp to audio_duration: WebMAUS occasionally returns
+                    # an xmax slightly past the chunk's end (sub-frame
+                    # rounding); after shifting, that can overrun the full
+                    # recording's duration and break TextGrid validation.
+                    if new_xmin >= audio_duration:
+                        continue
+                    if new_xmax > audio_duration:
+                        new_xmax = audio_duration
+                    bucket.append({
+                        "xmin": new_xmin,
+                        "xmax": new_xmax,
+                        "text": iv["text"],
+                    })
         except Exception as e:
             failures.append((i, chunk["xmin"], chunk["xmax"], str(e)))
             print(f"  chunk {i} ({chunk['xmin']:.2f}-{chunk['xmax']:.2f}s) FAILED: {e}",

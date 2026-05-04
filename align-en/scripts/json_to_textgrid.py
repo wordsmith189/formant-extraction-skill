@@ -95,8 +95,18 @@ def main() -> int:
     with open(args.src, encoding="utf-8") as f:
         data = json.load(f)
 
+    monologues = data.get("monologues", [])
+    speaker_ids = {m.get("speaker") for m in monologues if "speaker" in m}
+    if len(speaker_ids) > 1:
+        ids = ", ".join(str(s) for s in sorted(speaker_ids))
+        sys.exit(
+            f"input contains multiple speaker IDs ({ids}). align-en aligns "
+            "one speaker at a time — pre-filter the JSON to a single speaker "
+            "with transcribe-en/scripts/filter_speaker.py first."
+        )
+
     raw: list[dict] = []
-    for m in data.get("monologues", []):
+    for m in monologues:
         text_elems = [e for e in m["elements"]
                       if e.get("type") == "text" and "ts" in e and "end_ts" in e]
         if not text_elems:

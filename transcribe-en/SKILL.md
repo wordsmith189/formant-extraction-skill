@@ -65,7 +65,8 @@ Roles in `speaker_map` are one of: `"interviewer"`, `"participant"`,
 | SpeechBrain  | `python3 -c "from speechbrain.inference.speaker import SpeakerRecognition"` | `pip3 install speechbrain` |
 | scikit-learn | `python3 -c "from sklearn.cluster import AgglomerativeClustering"` | `pip3 install scikit-learn` |
 | torchaudio   | `python3 -c "import torchaudio"`                              | `pip3 install torchaudio` |
-| ffprobe      | `which ffprobe`                                               | `brew install ffmpeg` |
+| ffmpeg + ffprobe | `which ffmpeg ffprobe`                                    | `brew install ffmpeg` |
+| numpy        | `python3 -c "import numpy"`                                   | `pip3 install numpy` |
 
 First run of `transcribe_diarize.py` downloads the Whisper model
 (`large-v3-turbo` by default; ~1.5 GB) and the SpeechBrain ECAPA-TDNN

@@ -24,7 +24,7 @@ and types.
 | 13 | `preceding_phone`     | string   | Phone immediately before this vowel in the phones tier. Empty for the first phone of the recording. |
 | 14 | `following_phone`     | string   | Phone immediately after. Empty for the last phone. |
 | 15 | `flag`                | string   | `outlier` if the row tripped the outlier check (see below); empty otherwise. Reserved for future flag values; treat as a single-token string for now. |
-| 16 | `notes`               | string   | Free-form notes from the extractor (e.g. "F1 NA at 20%"). Empty by default. |
+| 16 | `notes`               | string   | Reserved for extractor messages in future versions (e.g. "F1 NA at 20%"). Always empty in v1 — neither extractor populates it yet. |
 
 ## Five rows per vowel
 

@@ -45,8 +45,8 @@ from pathlib import Path
 
 import yaml
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_VOWEL_SETS = REPO_ROOT / "references" / "vowel-sets.yaml"
+SKILL_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_VOWEL_SETS = SKILL_ROOT / "references" / "vowel-sets.yaml"
 PRAAT_SCRIPT = Path(__file__).resolve().parent / "extract_formants.praat"
 
 CANONICAL_COLUMNS = [

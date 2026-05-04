@@ -13,10 +13,14 @@ runs locally except the alignment HTTP calls to BAS WebMAUS (free for
 academic use, no key, data deleted within 24 h).
 
 ```bash
-pip3 install requests soundfile pyyaml \
+pip3 install requests soundfile pyyaml numpy \
     faster-whisper speechbrain scikit-learn torchaudio
-brew install ffmpeg praat sox          # macOS; Linux: apt install ffmpeg sox && build praat from source
+brew install ffmpeg praat              # macOS; Linux: apt install ffmpeg && build praat from source
 ```
+
+`sox` is only needed for the heavyweight (FAVE/MFA) path — `align-en
+--backend webmaus` uses `ffmpeg` for both resampling and chunk
+extraction.
 
 That's it. No micromamba, no MFA, no FAVE. Skill flags:
 
