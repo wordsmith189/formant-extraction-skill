@@ -72,7 +72,9 @@ recording end-to-end and want to re-run unattended.
 The three sub-skills can be invoked on their own. If you already have
 a transcript and just want alignment + vowel extraction, prompt:
 
-> **I have `interview.wav` and `interview.json` (a Rev-style transcript).
+> **I have `interview.wav` and `interview.json` (a Rev-style
+> transcript — JSON output from [Rev.ai](https://www.rev.ai/)'s
+> speech-to-text service).
 > Run `/align-en` on them, then run `/vowel-extract-en` on the resulting
 > TextGrid. Skip transcription.**
 
