@@ -196,8 +196,9 @@ Then invoke `align-en` with the chosen backend:
 
 - **`--backend fave`:** see `align-en/SKILL.md` Step 2 (fave). MFA
   needs the corpus directory pattern; output is
-  `<basename>_aligned.TextGrid` with `<spk> - words` / `<spk> - phones`
-  tiers (ARPA labels).
+  `<basename>_aligned.TextGrid` with `words` / `phones` tiers
+  containing ARPA labels (MFA's `--single_speaker` mode strips the
+  speaker prefix).
 - **`--backend webmaus`:** call the helper directly:
 
 ```bash

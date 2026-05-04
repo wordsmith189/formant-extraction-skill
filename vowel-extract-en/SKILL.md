@@ -22,8 +22,8 @@ TextGrid and writes the canonical CSV
 
 | Extractor | Reads                                | Phone set | Per-vowel rows | Lobanov norms |
 |-----------|--------------------------------------|-----------|----------------|---------------|
-| `fave`    | MFA-aligned TextGrid (`<spk> - phones`)  | ARPA      | 5 (20/35/50/65/80%) | yes |
-| `praat`   | any aligned TextGrid (ARPA or X-SAMPA)   | both      | 5 (20/35/50/65/80%) | no (do post-hoc) |
+| `fave`    | MFA-aligned TextGrid (`words`/`phones` tiers, ARPA labels) | ARPA  | 5 (20/35/50/65/80%) | yes |
+| `praat`   | any aligned TextGrid (ARPA or X-SAMPA)                     | both  | 5 (20/35/50/65/80%) | no (do post-hoc) |
 
 Both extractors emit the same first 16 columns. The `fave` extractor
 appends FAVE-specific extras (Lobanov normalization, Plotnik vowel
@@ -76,10 +76,12 @@ if extractor == "fave" and phoneset != "arpa":
 ```
 
 `run_praat_extractor.py` does this detection in `detect_backend()`
-(see `_phones_block_labels` and `ARPA_LABEL_RE`) and self-aborts if
-the labels don't fit either set. The meta-skill must run the
-extractor-vs-phoneset check **before** invoking either extractor so
-the error message is clean.
+(see `_phones_block_labels` and `ARPA_LABEL_RE`). When the phones
+tier is empty or the tier names match neither pattern, it aborts;
+otherwise it picks ARPA when ≥ 80 % of phone labels match the ARPA
+regex and falls back to X-SAMPA otherwise. The meta-skill must run
+the extractor-vs-phoneset check **before** invoking either extractor
+so the error message is clean.
 
 ## Prerequisites
 

@@ -50,10 +50,12 @@ SUPPRESS_FROM_EXTRAS = {
 POINTS = [20, 35, 50, 65, 80]
 
 
-def read_fave_txt(path: Path) -> list[dict]:
+def read_fave_txt(path: Path) -> tuple[list[str], list[dict]]:
+    """Return (fieldnames, rows) — fieldnames preserves the input column order."""
     with open(path, encoding="utf-8") as f:
         reader = csv.DictReader(f, delimiter="\t")
-        return list(reader)
+        fieldnames = list(reader.fieldnames or [])
+        return fieldnames, list(reader)
 
 
 def read_norm_file(path: Path) -> list[dict]:
@@ -107,18 +109,14 @@ def main() -> int:
     if not args.fave_txt.exists():
         sys.exit(f"FAVE .txt not found: {args.fave_txt}")
 
-    fave_rows = read_fave_txt(args.fave_txt)
+    fave_fieldnames, fave_rows = read_fave_txt(args.fave_txt)
     norm_rows = read_norm_file(args.fave_norm)
     if norm_rows and len(norm_rows) != len(fave_rows):
         print(f"WARN: row count mismatch (.txt={len(fave_rows)}, _norm={len(norm_rows)}); "
               "Lobanov values will be aligned by index where possible.",
               file=sys.stderr)
 
-    extra_columns: list[str] = []
-    if fave_rows:
-        for k in fave_rows[0].keys():
-            if k not in SUPPRESS_FROM_EXTRAS and k not in extra_columns:
-                extra_columns.append(k)
+    extra_columns = [k for k in fave_fieldnames if k not in SUPPRESS_FROM_EXTRAS]
 
     fieldnames = CANONICAL_COLUMNS + ["F1_LobanovNormed_unscaled", "F2_LobanovNormed_unscaled"] + extra_columns
 

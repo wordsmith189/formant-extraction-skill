@@ -37,8 +37,9 @@ The meta-skill walks you through transcription → speaker selection →
 alignment → vowel extraction, pausing at each stage so you can review the
 output before continuing. Use `--no-confirm` to run without pauses.
 
-For the FAVE/MFA path (heavier install, FAVE-style 39-column CSV
-output), see [INSTALL.md](INSTALL.md).
+For the FAVE/MFA path (heavier install; CSV is the same canonical
+16-column schema with FAVE-specific extras appended after column 16),
+see [INSTALL.md](INSTALL.md).
 
 ## Third-party tools and licenses
 
@@ -73,9 +74,10 @@ options at invocation:
 - **Alignment backend:** `fave` (Montreal Forced Aligner with the
   `english_us_arpa` model — ARPA labels, heavier install) or `webmaus`
   (BAS WebMAUS API — X-SAMPA labels, lightweight install).
-- **Vowel extractor:** `fave` (FAVE-extract, paired with MFA output,
-  classic FAVE 39-column CSV plus Lobanov-normalized formants) or
-  `praat` (headless Praat script, reads either ARPA or X-SAMPA via
+- **Vowel extractor:** `fave` (FAVE-extract, paired with MFA output —
+  canonical 16 columns plus FAVE extras such as Lobanov-normalized
+  formants and Plotnik vowel-class labels appended after column 16)
+  or `praat` (headless Praat script, reads either ARPA or X-SAMPA via
   `references/vowel-sets.yaml`).
 
 Both extractors emit the canonical 16-column CSV defined in

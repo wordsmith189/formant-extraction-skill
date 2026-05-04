@@ -194,14 +194,25 @@ def check_load() -> int:
 
 
 def wait_for_load() -> int:
+    """Block until BAS load is 0 or 1; abort on persistent 2 or persistent
+    network failure. -1 means the load endpoint was unreachable; we retry
+    rather than treat it as green."""
+    load = -1
     for attempt in range(LOAD_RETRIES + 1):
         load = check_load()
-        if load < 2:
+        if 0 <= load < 2:
             return load
         if attempt < LOAD_RETRIES:
-            print(f"BAS server load=2 (full); waiting {LOAD_RETRY_WAIT}s...", file=sys.stderr)
+            if load == 2:
+                msg = f"BAS server load=2 (full); waiting {LOAD_RETRY_WAIT}s..."
+            else:
+                msg = f"BAS load endpoint unreachable (status={load}); retrying in {LOAD_RETRY_WAIT}s..."
+            print(msg, file=sys.stderr)
             time.sleep(LOAD_RETRY_WAIT)
-    print("BAS server still full after retries. Aborting.", file=sys.stderr)
+    if load == 2:
+        print("BAS server still full after retries. Aborting.", file=sys.stderr)
+    else:
+        print(f"BAS load endpoint still unreachable (status={load}). Aborting.", file=sys.stderr)
     sys.exit(1)
 
 
