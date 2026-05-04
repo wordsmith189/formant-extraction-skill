@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.env.local
+*.swp
+.idea/
+.vscode/
+tmp/
+mfa_workdir/

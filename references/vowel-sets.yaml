@@ -1,0 +1,56 @@
+# Vowel inventories for the two phone sets the toolkit encounters.
+# Read by vowel-extract-en/scripts/extract_formants.praat (and its Python
+# wrapper) to decide which phones in the `phones` tier are vowels.
+#
+# Use the inventory matching your alignment backend:
+#   --phoneset arpa     for FAVE/MFA output (tier "<spk> - phones")
+#   --phoneset xsampa   for WebMAUS output (tier "phones")
+#
+# Phones not listed here are treated as consonants and skipped during
+# extraction. Stress digits (0, 1, 2) are stripped before lookup, so list
+# the bare vowel symbol once.
+
+arpa:
+  # Source: CMU Pronouncing Dictionary phone set (used by english_us_arpa).
+  # 15 monophthongs and diphthongs. Stress digits (0/1/2) are appended in
+  # MFA output (e.g. "AA1"); stripped before matching.
+  monophthongs:
+    - AA   # father
+    - AE   # cat
+    - AH   # cut, comma
+    - AO   # caught
+    - EH   # bed
+    - ER   # bird
+    - IH   # bit
+    - IY   # beat
+    - UH   # book
+    - UW   # boot
+  diphthongs:
+    - AW   # cow
+    - AY   # bite
+    - EY   # bait
+    - OW   # boat
+    - OY   # boy
+
+xsampa:
+  # Source: SAMPA / X-SAMPA for Standard American English as used by BAS
+  # WebMAUS eng-US. Two-character symbols dominate; longer multi-char
+  # symbols listed verbatim.
+  monophthongs:
+    - "i:"   # FLEECE
+    - "I"    # KIT
+    - "E"    # DRESS
+    - "{"    # TRAP
+    - "A:"   # PALM / LOT (American)
+    - "V"    # STRUT
+    - "U"    # FOOT
+    - "u:"   # GOOSE
+    - "@"    # commA / schwa
+    - "3`"   # NURSE (rhotic)
+    - "@`"   # lettER (rhotic schwa)
+  diphthongs:
+    - "aI"   # PRICE
+    - "aU"   # MOUTH
+    - "eI"   # FACE
+    - "oU"   # GOAT
+    - "OI"   # CHOICE
