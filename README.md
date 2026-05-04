@@ -76,16 +76,26 @@ a transcript and just want alignment + vowel extraction, prompt:
 > Run `/align-en` on them, then run `/vowel-extract-en` on the resulting
 > TextGrid. Skip transcription.**
 
+The transcript does not have to be Rev-style JSON. `align-en` also
+accepts a **Praat `.TextGrid`** with an utterance-level interval tier
+(empty intervals are treated as silence) and a **plain `.txt`** file
+of running prose (WebMAUS backend only — FAVE/MFA needs the
+utterance-level TextGrid). For a TextGrid transcript:
+
+> **I have `interview.wav` and `interview.TextGrid` (utterance-level
+> intervals on a single tier). Run `/align-en` on them with the
+> WebMAUS backend, then `/vowel-extract-en` on the aligned TextGrid.**
+
 Equivalent meta-skill form:
 
 > **Run `/formant-extraction` on `interview.wav` starting from the
-> transcript at `interview.json` (use `--from transcript`).**
+> transcript at `interview.TextGrid` (use `--from transcript`).**
 
 Other entry points:
 
 - Transcribe only: *"Run `/transcribe-en` on `interview.wav`."*
 - Align only (already have transcript): *"Run `/align-en` on
-  `interview.wav` with `interview.json`."*
+  `interview.wav` with `interview.json`."* (or `.TextGrid` / `.txt`)
 - Extract only (already have an aligned TextGrid): *"Run
   `/vowel-extract-en` on `interview.TextGrid` with `interview.wav`."*
 
@@ -171,6 +181,33 @@ Universität München** in publications that use any BAS web service.
 For the remaining tools (MFA, Whisper / faster-whisper, SpeechBrain,
 Praat), see the short citations under "Third-party tools and
 licenses" above.
+
+## Citing this toolkit
+
+Until a Zenodo DOI is registered (see below), cite the GitHub
+repository directly:
+
+- Hinrichs, L. (2026). *formant-extraction-skill: Claude-driven
+  forced alignment and vowel-formant extraction for monolingual
+  English interviews* (v1) [Computer software]. GitHub.
+  <https://github.com/wordsmith189/formant-extraction-skill>
+
+A `CITATION.cff` is included so GitHub shows a "Cite this
+repository" button on the repo page.
+
+### Getting a DOI via Zenodo
+
+[Zenodo](https://zenodo.org) mints free DOIs for archived GitHub
+releases. To register one for this repo:
+
+1. Sign in to Zenodo with your GitHub account.
+2. Go to *GitHub* in your Zenodo account settings and toggle archiving
+   on for `wordsmith189/formant-extraction-skill`.
+3. Cut a GitHub release (e.g. `v1.0.0`) — Zenodo archives the tagged
+   snapshot and assigns a per-release DOI plus a *concept DOI* that
+   always resolves to the latest version.
+4. Add both DOIs to `CITATION.cff` and update this section's citation
+   to use the concept DOI.
 
 ## What v1 supports
 

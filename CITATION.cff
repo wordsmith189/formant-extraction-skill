@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "formant-extraction-skill"
+abstract: >
+  A bundle of Claude skills that drive a monolingual American English
+  interview pipeline from raw audio to a vowel-formant CSV: Whisper +
+  ECAPA-TDNN transcription and diarization, FAVE/MFA or BAS WebMAUS
+  forced alignment, and FAVE-extract or headless Praat formant
+  extraction. Runs in Claude Cowork (desktop) or Claude Code (CLI / IDE).
+authors:
+  - family-names: Hinrichs
+    given-names: Lars
+    affiliation: "The University of Texas at Austin"
+    email: lh9896@eid.utexas.edu
+version: "1.0.0"
+date-released: "2026-05-04"
+url: "https://github.com/wordsmith189/formant-extraction-skill"
+repository-code: "https://github.com/wordsmith189/formant-extraction-skill"
+license: MIT
+keywords:
+  - forced alignment
+  - vowel formants
+  - sociophonetics
+  - speech processing
+  - Praat
+  - FAVE
+  - WebMAUS
+  - Whisper
+  - Claude
+  - linguistics
