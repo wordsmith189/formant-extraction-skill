@@ -100,12 +100,12 @@ install them separately.
 
 - **BAS WebMAUS API** — free for academic / non-commercial use; data
   deleted from BAS servers within 24 h; sleep ≥ 0.5 s between calls
-  (rate-limit etiquette). Cite: Kisler T, Reichel U, Schiel F (2017).
-  *Computer Speech and Language* 45, 326–347.
+  (rate-limit etiquette). See the "Citing FAVE and WebMAUS" section
+  below for the full citation.
 - **Montreal Forced Aligner (MFA)** — MIT. Cite: McAuliffe M, Socolof M,
   Mihuc S, Wagner M, Sonderegger M (2017). MFA toolkit. *Interspeech 2017*.
-- **FAVE-extract / FAVE-align** — MIT. Cite: Rosenfelder I, Fruehwald J,
-  Evanini K, Yuan J. FAVE (Forced Alignment & Vowel Extraction).
+- **FAVE-extract / FAVE-align** — GPL-3.0. See the "Citing FAVE and
+  WebMAUS" section below for the full citation.
 - **Whisper / faster-whisper** — MIT. Cite: Radford A et al. (2023).
   "Robust Speech Recognition via Large-Scale Weak Supervision."
 - **SpeechBrain** (ECAPA-TDNN speaker embeddings used for diarization)
@@ -117,6 +117,43 @@ install them separately.
   by computer* (any version).
 
 This repo's own code is licensed under [MIT](LICENSE).
+
+## Citing FAVE and WebMAUS
+
+If you publish work using the **FAVE/MFA path**, cite the FAVE program
+suite. The repository ships a `CITATION.cff`; the canonical software
+citation is:
+
+- Rosenfelder, I., Fruehwald, J., Brickhouse, C., Evanini, K.,
+  Seyfarth, S., Gorman, K., Prichard, H., & Yuan, J. (2022). *FAVE:
+  Forced alignment and vowel extraction* (v2.0.1) [Computer software].
+  GitHub. <https://github.com/JoFrhwld/FAVE>
+
+The original 2011 release is still cited for comparability with
+older studies:
+
+- Rosenfelder, I., Fruehwald, J., Evanini, K., & Yuan, J. (2011).
+  *FAVE (Forced Alignment and Vowel Extraction) Program Suite.*
+  <http://fave.ling.upenn.edu>
+
+If you publish work using the **WebMAUS path**, the BAS terms of use
+ask for two references — the MAUS algorithm and the web-services
+wrapper — plus an institutional acknowledgment:
+
+- Schiel, F. (1999). Automatic phonetic transcription of non-prompted
+  speech. In *Proceedings of the 14th International Congress of
+  Phonetic Sciences (ICPhS)* (pp. 607–610). San Francisco.
+- Kisler, T., Reichel, U. D., & Schiel, F. (2017). Multilingual
+  processing of speech via web services. *Computer Speech & Language*,
+  *45*, 326–347. <https://doi.org/10.1016/j.csl.2017.01.005>
+
+Acknowledge the **Bavarian Archive for Speech Signals (BAS),
+Institute of Phonetics and Speech Processing, Ludwig-Maximilians-
+Universität München** in publications that use any BAS web service.
+
+For the remaining tools (MFA, Whisper / faster-whisper, SpeechBrain,
+Praat), see the short citations under "Third-party tools and
+licenses" above.
 
 ## What v1 supports
 
