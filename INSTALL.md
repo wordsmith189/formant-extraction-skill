@@ -1,5 +1,12 @@
 # Install
 
+> **Recommended:** if you already have the skills symlinked into
+> `~/.claude/skills/`, just run `/formant-extraction-setup` in Claude and
+> it will handle everything on this page automatically — OS detection,
+> dependency installs, symlinks, and verification. The manual steps below
+> are a reference for CI environments, troubleshooting, or users who
+> prefer to install by hand.
+
 The toolkit ships two parallel paths through the alignment + extraction
 stages. Pick one. The lightweight path is faster to install, easier to
 maintain, and good enough for most research; the heavyweight path produces

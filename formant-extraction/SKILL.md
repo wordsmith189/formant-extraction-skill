@@ -17,6 +17,9 @@ description: >
 
 # formant-extraction — meta-skill
 
+> **First time?** Run `/formant-extraction-setup` before this skill.
+> It installs all dependencies and creates the skill symlinks automatically.
+
 Runs the three sub-skills in order:
 
 ```text
