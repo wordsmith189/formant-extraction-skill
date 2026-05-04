@@ -123,7 +123,7 @@ the whole batch on the first review pause.
 ## Third-party tools and licenses
 
 This toolkit invokes several external tools. None ship with the repo;
-install them separately.
+this skill installs them separately as needed.
 
 - **BAS WebMAUS API** — free for academic / non-commercial use; data
   deleted from BAS servers within 24 h; sleep ≥ 0.5 s between calls
