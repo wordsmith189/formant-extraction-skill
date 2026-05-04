@@ -14,59 +14,81 @@ from raw audio to a vowel-formant CSV.
 v1 covers English only. Bilingual support is planned and will reuse
 `align-en`'s WebMAUS branch.
 
+The v1 suite runs in either **Claude Cowork** (the Claude desktop
+app) or **Claude Code** (the CLI / IDE extension). The prompts below
+work in both; the only difference is where the skills directory
+lives.
+
 ## Quick start
 
-The v1 pipeline is FAVE/MFA on monolingual American English. (A
-lightweight WebMAUS path is built but planned to land as the default
-in v2 alongside bilingual support.)
+You drive this toolkit by prompting Claude. The five skills
+(`formant-extraction-setup`, `transcribe-en`, `align-en`,
+`vowel-extract-en`, and the `formant-extraction` meta-skill) do the
+work; you tell Claude which one to invoke and on what file.
+
+### 1. Set up the installables (one-time)
+
+After cloning the repo, symlink the setup skill into Claude's skills
+directory:
 
 ```bash
-# 1. install Python deps + binaries (one-time)
-pip3 install requests soundfile pyyaml numpy fave \
-    faster-whisper speechbrain scikit-learn torchaudio
-# macOS:
-brew install ffmpeg sox
-brew install --cask praat                # Praat ships in homebrew-cask
-# Linux:
-# apt-get install ffmpeg sox
-# (build praat from source — https://www.fon.hum.uva.nl/praat/)
-
-# 2. install MFA via micromamba (one-time; ~3 GB during install,
-#    drops to ~1.6 GB persistent after `micromamba clean -a`)
-curl -Ls https://micro.mamba.pm/api/micromamba/osx-arm64/latest \
-    | tar -xj -C /tmp bin/micromamba
-export MAMBA_ROOT_PREFIX=/tmp/micromamba
-/tmp/bin/micromamba create -n mfa -c conda-forge montreal-forced-aligner -y
-/tmp/bin/micromamba run -n mfa mfa model download acoustic english_us_arpa
-/tmp/bin/micromamba run -n mfa mfa model download dictionary english_us_arpa
-# (Intel Mac / Linux: swap the micromamba URL for your platform —
-#  see https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html)
-
-# 3. Praat wrapper for headless FAVE-extract (one-time, macOS Apple Silicon)
-mkdir -p /tmp/bin
-printf '#!/bin/bash\nexec /opt/homebrew/bin/praat --run "$@"\n' > /tmp/praat-wrapper
-chmod +x /tmp/praat-wrapper
-ln -sf /tmp/praat-wrapper /tmp/bin/praat
-# (Intel Mac: use /usr/local/bin/praat. Linux: use the praat path on
-#  your system — `which praat` after installing.)
-
-# 4. install the four skills
-ln -s "$(pwd)/transcribe-en"      ~/.claude/skills/transcribe-en
-ln -s "$(pwd)/align-en"           ~/.claude/skills/align-en
-ln -s "$(pwd)/vowel-extract-en"   ~/.claude/skills/vowel-extract-en
-ln -s "$(pwd)/formant-extraction" ~/.claude/skills/formant-extraction
-
-# 5. run the meta-skill on an interview
-#    (in Claude Code; defaults are --backend fave --extractor fave)
-/formant-extraction interview.wav
+ln -s "$(pwd)/formant-extraction-setup" ~/.claude/skills/formant-extraction-setup
 ```
 
-The meta-skill walks you through transcription → speaker selection →
-alignment → vowel extraction, pausing at each stage so you can review
-the output before continuing. Use `--no-confirm` to run without pauses.
+Then in Claude Code, prompt:
 
-For full prerequisite details, disk-space estimates, and the
-lightweight WebMAUS path (planned for v2), see [INSTALL.md](INSTALL.md).
+> **Run `/formant-extraction-setup` for the FAVE/MFA path.**
+
+The setup skill detects your OS and architecture, asks which pipeline
+path you want (lightweight WebMAUS+Praat or heavyweight FAVE/MFA),
+installs missing dependencies (Python packages, ffmpeg, sox, Praat,
+MFA via micromamba, the Praat wrapper for headless FAVE-extract),
+symlinks the remaining three skills into `~/.claude/skills/`, and
+verifies the install. Swap `FAVE/MFA` for `WebMAUS` in the prompt for
+the lightweight path.
+
+For a manual install, see [INSTALL.md](INSTALL.md).
+
+### 2. Run the whole pipeline on one audio file
+
+Put a recording in your project directory and prompt:
+
+> **Run `/formant-extraction` on `interview.wav` end-to-end.**
+
+The meta-skill walks the file through transcription → speaker
+selection → forced alignment → vowel extraction, pausing at two
+human-in-the-loop gates so you can correct the transcript and verify
+alignment boundaries in Praat before continuing. The defaults are
+FAVE/MFA alignment plus FAVE-extract — switch to the lightweight path
+by adding "use the WebMAUS backend and the Praat extractor" to the
+prompt. Add "skip the confirmation gates" once you've validated the
+recording end-to-end and want to re-run unattended.
+
+### 3. Run only part of the pipeline
+
+The three sub-skills can be invoked on their own. If you already have
+a transcript and just want alignment + vowel extraction, prompt:
+
+> **I have `interview.wav` and `interview.json` (a Rev-style transcript).
+> Run `/align-en` on them, then run `/vowel-extract-en` on the resulting
+> TextGrid. Skip transcription.**
+
+Equivalent meta-skill form:
+
+> **Run `/formant-extraction` on `interview.wav` starting from the
+> transcript at `interview.json` (use `--from transcript`).**
+
+Other entry points:
+
+- Transcribe only: *"Run `/transcribe-en` on `interview.wav`."*
+- Align only (already have transcript): *"Run `/align-en` on
+  `interview.wav` with `interview.json`."*
+- Extract only (already have an aligned TextGrid): *"Run
+  `/vowel-extract-en` on `interview.TextGrid` with `interview.wav`."*
+
+Each sub-skill writes its outputs next to its inputs, so chaining
+them by hand gives you the same artifacts as the meta-skill, minus
+the review gates.
 
 ## Third-party tools and licenses
 
