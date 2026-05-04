@@ -17,7 +17,10 @@ v1 covers English only. Bilingual support is planned and will reuse
 The v1 suite runs in either **Claude Cowork** (the Claude desktop
 app) or **Claude Code** (the CLI / IDE extension). The prompts below
 work in both; the only difference is where the skills directory
-lives.
+lives. The skills shell out to local binaries (ffmpeg, sox, Praat,
+MFA, FAVE-extract) and read/write files on disk, so they don't run
+in claude.ai chat — its skill sandbox has no access to your audio
+files or those CLIs.
 
 ## Quick start
 
