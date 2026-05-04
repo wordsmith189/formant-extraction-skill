@@ -102,7 +102,12 @@ def detect_backend(textgrid: Path) -> tuple[str, str, str]:
     if "phones" in tiers and "words" in tiers:
         labels = _phones_block_labels(content, tiers.index("phones"))
         if not labels:
-            raise SystemExit("phones tier has no non-empty intervals; cannot infer phone set")
+            raise SystemExit(
+                "ERROR: phones tier exists but contains no non-empty intervals.\n"
+                "  Cannot infer phone set (ARPA vs X-SAMPA) without sample labels.\n"
+                "  Likely cause: alignment failed silently. Re-run align-en and\n"
+                "  inspect the aligned TextGrid in Praat before retrying."
+            )
         arpa_share = sum(1 for lab in labels if ARPA_LABEL_RE.match(lab)) / len(labels)
         phoneset = "arpa" if arpa_share >= 0.8 else "xsampa"
         return phoneset, "words", "phones"

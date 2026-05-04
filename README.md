@@ -14,32 +14,59 @@ from raw audio to a vowel-formant CSV.
 v1 covers English only. Bilingual support is planned and will reuse
 `align-en`'s WebMAUS branch.
 
-## Quick start (lightweight path)
+## Quick start
+
+The v1 pipeline is FAVE/MFA on monolingual American English. (A
+lightweight WebMAUS path is built but planned to land as the default
+in v2 alongside bilingual support.)
 
 ```bash
-# 1. install (one-time)
-pip3 install requests soundfile pyyaml numpy \
+# 1. install Python deps + binaries (one-time)
+pip3 install requests soundfile pyyaml numpy fave \
     faster-whisper speechbrain scikit-learn torchaudio
-brew install ffmpeg praat                 # or apt-get install ffmpeg + build praat
+# macOS:
+brew install ffmpeg sox
+brew install --cask praat                # Praat ships in homebrew-cask
+# Linux:
+# apt-get install ffmpeg sox
+# (build praat from source — https://www.fon.hum.uva.nl/praat/)
 
-# 2. install the four skills
+# 2. install MFA via micromamba (one-time; ~3 GB during install,
+#    drops to ~1.6 GB persistent after `micromamba clean -a`)
+curl -Ls https://micro.mamba.pm/api/micromamba/osx-arm64/latest \
+    | tar -xj -C /tmp bin/micromamba
+export MAMBA_ROOT_PREFIX=/tmp/micromamba
+/tmp/bin/micromamba create -n mfa -c conda-forge montreal-forced-aligner -y
+/tmp/bin/micromamba run -n mfa mfa model download acoustic english_us_arpa
+/tmp/bin/micromamba run -n mfa mfa model download dictionary english_us_arpa
+# (Intel Mac / Linux: swap the micromamba URL for your platform —
+#  see https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html)
+
+# 3. Praat wrapper for headless FAVE-extract (one-time, macOS Apple Silicon)
+mkdir -p /tmp/bin
+printf '#!/bin/bash\nexec /opt/homebrew/bin/praat --run "$@"\n' > /tmp/praat-wrapper
+chmod +x /tmp/praat-wrapper
+ln -sf /tmp/praat-wrapper /tmp/bin/praat
+# (Intel Mac: use /usr/local/bin/praat. Linux: use the praat path on
+#  your system — `which praat` after installing.)
+
+# 4. install the four skills
 ln -s "$(pwd)/transcribe-en"      ~/.claude/skills/transcribe-en
 ln -s "$(pwd)/align-en"           ~/.claude/skills/align-en
 ln -s "$(pwd)/vowel-extract-en"   ~/.claude/skills/vowel-extract-en
 ln -s "$(pwd)/formant-extraction" ~/.claude/skills/formant-extraction
 
-# 3. run the meta-skill on an interview
-#    (in Claude Code)
-/formant-extraction interview.wav --backend webmaus --extractor praat
+# 5. run the meta-skill on an interview
+#    (in Claude Code; defaults are --backend fave --extractor fave)
+/formant-extraction interview.wav
 ```
 
 The meta-skill walks you through transcription → speaker selection →
-alignment → vowel extraction, pausing at each stage so you can review the
-output before continuing. Use `--no-confirm` to run without pauses.
+alignment → vowel extraction, pausing at each stage so you can review
+the output before continuing. Use `--no-confirm` to run without pauses.
 
-For the FAVE/MFA path (heavier install; CSV is the same canonical
-16-column schema with FAVE-specific extras appended after column 16),
-see [INSTALL.md](INSTALL.md).
+For full prerequisite details, disk-space estimates, and the
+lightweight WebMAUS path (planned for v2), see [INSTALL.md](INSTALL.md).
 
 ## Third-party tools and licenses
 

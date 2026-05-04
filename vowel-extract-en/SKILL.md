@@ -98,10 +98,14 @@ so the error message is clean.
 
 Calls `scripts/run_praat_extractor.py`, which:
 
-1. Reads the TextGrid header to confirm tier names; aborts if neither
-   pair is present.
+1. Reads the TextGrid header to confirm tier names — aborts if neither
+   pair (`<spk> - words/phones` or bare `words/phones`) is present.
 2. Picks the phone-set inventory (ARPA vs X-SAMPA) from
-   `references/vowel-sets.yaml` based on tier names.
+   `references/vowel-sets.yaml` based on **phone label content**: ARPA
+   if ≥ 80 % of non-empty phone labels match `^[A-Z]+\d?$`, X-SAMPA
+   otherwise. (Tier names alone are no longer enough — MFA's
+   `--single_speaker` mode strips the speaker prefix, so MFA and
+   WebMAUS both emit bare `words`/`phones` tiers.)
 3. Writes the vowel list to a temp file and invokes Praat `--run` on
    `scripts/extract_formants.praat` with these arguments:
    ```

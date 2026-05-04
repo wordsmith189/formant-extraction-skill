@@ -41,6 +41,7 @@ import argparse
 import io
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -403,7 +404,7 @@ def main() -> int:
         print(f"  phones intervals:        {len(mau)}")
     finally:
         if not args.keep_tmp:
-            subprocess.run(["rm", "-rf", str(workdir)], check=False)
+            shutil.rmtree(workdir, ignore_errors=True)
         else:
             print(f"  workdir kept at:         {workdir}")
 

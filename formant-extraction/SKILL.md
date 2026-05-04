@@ -119,6 +119,14 @@ Apply in this order before invoking any sub-skill:
 
 ## Pipeline
 
+The script paths below assume the four sub-skills are installed at
+`~/.claude/skills/` (the standard Claude Code skills location, which
+is what the symlink commands in `INSTALL.md` set up). If the user has
+the skills somewhere else — symlinked from a different location, or
+installed under a custom `CLAUDE_SKILLS_DIR` — substitute that path
+in each command. The meta-skill should detect this from the
+environment when possible rather than hard-coding `~/.claude/skills/`.
+
 ### Stage A — Transcribe (`--from audio` only)
 
 Invoke `transcribe-en`:

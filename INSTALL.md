@@ -15,7 +15,12 @@ academic use, no key, data deleted within 24 h).
 ```bash
 pip3 install requests soundfile pyyaml numpy \
     faster-whisper speechbrain scikit-learn torchaudio
-brew install ffmpeg praat              # macOS; Linux: apt install ffmpeg && build praat from source
+# macOS:
+brew install ffmpeg
+brew install --cask praat              # Praat ships in homebrew-cask, not core
+# Linux:
+# apt install ffmpeg
+# (build praat from source — see https://www.fon.hum.uva.nl/praat/)
 ```
 
 `sox` is only needed for the heavyweight (FAVE/MFA) path — `align-en
@@ -50,9 +55,10 @@ export MAMBA_ROOT_PREFIX=/tmp/micromamba
 pip3 install --user fave
 
 # 4. Praat (headless wrapper) and sox
-brew install --cask praat
-brew install sox
-# (See align-en/SKILL.md Step 4a for the Praat-wrapper shim used by FAVE.)
+brew install --cask praat              # macOS; Linux: build praat from source
+brew install sox                       # macOS; Linux: apt install sox
+# (See vowel-extract-en/SKILL.md "Step 1 — Praat wrapper for headless FAVE"
+#  for the wrapper shim that lets FAVE-extract call Praat without a GUI.)
 ```
 
 Skill flags:

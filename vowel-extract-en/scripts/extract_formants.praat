@@ -113,7 +113,14 @@ for p to nPhones
     if length(label$) = 0
         goto skip
     endif
-    # Strip ARPA stress digit (single trailing 0/1/2) for vowel-set lookup
+    # Strip ARPA stress digit (single trailing 0/1/2) for vowel-set lookup.
+    # Applied unconditionally — safe for v1 because:
+    #  - ARPA labels (FAVE/MFA) end in 0/1/2 (e.g. AA1, IH0): strip is needed.
+    #  - X-SAMPA labels in BAS WebMAUS eng-US output don't end in 0/1/2:
+    #    no-op.
+    # For v2 (other WebMAUS languages where X-SAMPA stress digits do
+    # appear), the wrapper should pass phoneset and gate this strip on
+    # phoneset == "arpa".
     bare$ = replace_regex$ (label$, "([0-2])$", "", 0)
     # Substring match: vowels$ contains "<newline>BARE<newline>"
     if index(vowels$, newline$ + bare$ + newline$) = 0

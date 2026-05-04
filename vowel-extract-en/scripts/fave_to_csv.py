@@ -67,6 +67,19 @@ def read_norm_file(path: Path) -> list[dict]:
     if len(lines) < 4:
         return []
     header = lines[2].split("\t")
+    # Sanity-check the layout assumption — if FAVE ever changes its
+    # output format, fail loudly with a useful message instead of
+    # silently producing garbage Lobanov columns.
+    expected = {"norm_F1", "norm_F2"}
+    missing = expected - set(header)
+    if missing:
+        raise SystemExit(
+            f"ERROR: FAVE _norm.txt at {path} has unexpected layout.\n"
+            f"  Header (line 3) is missing columns: {sorted(missing)}.\n"
+            f"  Got header: {header[:8]}{'...' if len(header) > 8 else ''}\n"
+            "  Aborting rather than emit empty Lobanov columns. If "
+            "FAVE has changed its output format, update read_norm_file()."
+        )
     rows = []
     for line in lines[3:]:
         if not line.strip():
@@ -101,13 +114,22 @@ def main() -> int:
     p = argparse.ArgumentParser(description="Convert FAVE-extract output to canonical CSV")
     p.add_argument("--fave-txt", required=True, type=Path)
     p.add_argument("--fave-norm", required=True, type=Path,
-                   help="FAVE _norm.txt with Lobanov-normalized formants (optional but expected)")
+                   help="FAVE _norm.txt with Lobanov-normalized formants. "
+                        "Required: missing file aborts; the script does not "
+                        "silently fall back to empty Lobanov columns.")
     p.add_argument("--speaker", required=True)
     p.add_argument("--out", required=True, type=Path)
     args = p.parse_args()
 
     if not args.fave_txt.exists():
         sys.exit(f"FAVE .txt not found: {args.fave_txt}")
+    if not args.fave_norm.exists():
+        sys.exit(
+            f"FAVE _norm.txt not found: {args.fave_norm}\n"
+            "  FAVE-extract writes this alongside the .txt output. If it's "
+            "missing, the .txt is probably also incomplete — re-run "
+            "fave-extract before converting to CSV."
+        )
 
     fave_fieldnames, fave_rows = read_fave_txt(args.fave_txt)
     norm_rows = read_norm_file(args.fave_norm)

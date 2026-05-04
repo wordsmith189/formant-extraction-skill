@@ -85,9 +85,11 @@ Optional:
   speaker).
 - `--model SIZE` — `tiny`, `base`, `small`, `medium`, `large-v3`, or
   `large-v3-turbo` (default).
-- `--language en` — kept explicit; do not let Whisper auto-detect for
-  English interview data (it occasionally misfires on the first few
-  seconds).
+
+Whisper is invoked with `language="en"` hard-coded (no auto-detect —
+on English interview audio Whisper occasionally misfires the language
+ID on the first few seconds). v1 is English only; a `--language` flag
+is planned for v2 alongside bilingual support.
 
 ## Stage 1 — `transcribe_diarize.py`
 
