@@ -289,7 +289,7 @@ Create the symlinks only if they don't already exist or are broken:
 SKILLS_DIR="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
 mkdir -p "$SKILLS_DIR"
 
-for skill in transcribe-en align-en vowel-extract-en formant-extraction formant-extraction-setup; do
+for skill in transcribe-en transcribe-bi align-en align-bi vowel-extract-en formant-extraction formant-extraction-setup; do
     target="$SKILLS_DIR/$skill"
     if [ -L "$target" ] && [ -e "$target" ]; then
         echo "  ✓ $skill  (already linked)"

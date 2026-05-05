@@ -77,12 +77,21 @@ vowel-extract-en --extractor fave
 
 ## Installing the skills
 
-Symlink each sub-folder into `~/.claude/skills/`:
+Symlink each sub-folder into `~/.claude/skills/`. The English path
+needs the `*-en` skills; the bilingual path adds `transcribe-bi` and
+`align-bi`. Install both sets if you want either.
 
 ```bash
+# Monolingual English path
 ln -s "$(pwd)/transcribe-en"      ~/.claude/skills/transcribe-en
 ln -s "$(pwd)/align-en"           ~/.claude/skills/align-en
 ln -s "$(pwd)/vowel-extract-en"   ~/.claude/skills/vowel-extract-en
+
+# Bilingual path (adds these two; reuses vowel-extract-en above)
+ln -s "$(pwd)/transcribe-bi"      ~/.claude/skills/transcribe-bi
+ln -s "$(pwd)/align-bi"           ~/.claude/skills/align-bi
+
+# Meta-skill (used by both paths)
 ln -s "$(pwd)/formant-extraction" ~/.claude/skills/formant-extraction
 ```
 

@@ -1,18 +1,40 @@
 # formant-extraction-skill
 
-Four Claude Code skills for taking a monolingual English interview recording
-from raw audio to a vowel-formant CSV.
+Six Claude Code skills for taking an interview recording — monolingual
+American English **or bilingual two-language** — from raw audio to a
+vowel-formant CSV.
+
+**Monolingual (English) path:**
 
 - `transcribe-en/` — transcribe and diarize the recording.
 - `align-en/` — force-align audio and transcript to word + phone level.
   Backend: FAVE/MFA or BAS WebMAUS.
 - `vowel-extract-en/` — extract vowel formants from an aligned TextGrid.
   Extractor: FAVE-extract or a headless Praat script.
-- `formant-extraction/` — meta-skill that runs the three above and asks the
-  user to pick the start point, alignment backend, and extractor.
 
-v1 covers English only. Bilingual support is planned and will reuse
-`align-en`'s WebMAUS branch.
+**Bilingual path** (added in v2):
+
+- `transcribe-bi/` — diarize first, then per-segment language
+  identification, then language-conditioned ASR. Output JSON carries
+  both `speaker` and `language` on every monologue.
+- `align-bi/` — force-align bilingual audio via the WebMAUS API, one
+  call per monologue with the correct `LANGUAGE` set per chunk.
+  Phone labels default to X-SAMPA; pass `--phone-symbols ipa` for
+  IPA. (FAVE/MFA is monolingual-only — no MFA acoustic model spans
+  two languages.)
+- `vowel-extract-en/` — same skill as the monolingual path; the
+  Praat extractor handles X-SAMPA (and IPA, with an extended
+  `vowel-sets.yaml`) and is the only valid extractor in bilingual
+  mode.
+
+**Meta-skill:**
+
+- `formant-extraction/` — runs the right three sub-skills for the
+  chosen mode. First question: monolingual or bilingual? If
+  bilingual, two follow-up questions identify L1 and L2 (four
+  pre-set buttons — *(fairly standard) English, Mandarin, Spanish,
+  Russian* — plus a free-text "Other" field for regiolects,
+  sociolects, or any other WebMAUS-supported language).
 
 The v1 suite runs in either **Claude Cowork** (the Claude desktop
 app) or **Claude Code** (the CLI / IDE extension). The prompts below
@@ -58,14 +80,25 @@ Put a recording in your project directory and prompt:
 
 > **Run `/formant-extraction` on `interview.wav` end-to-end.**
 
-The meta-skill walks the file through transcription → speaker
-selection → forced alignment → vowel extraction, pausing at two
-human-in-the-loop gates so you can correct the transcript and verify
-alignment boundaries in Praat before continuing. The defaults are
-FAVE/MFA alignment plus FAVE-extract — switch to the lightweight path
-by adding "use the WebMAUS backend and the Praat extractor" to the
-prompt. Add "skip the confirmation gates" once you've validated the
-recording end-to-end and want to re-run unattended.
+The first question the meta-skill asks is whether the recording is
+**monolingual (English)** or **bilingual**. If you answer
+"bilingual," it asks two follow-ups for L1 and L2 (four pre-set
+buttons — English / Mandarin / Spanish / Russian — plus an "Other"
+field). From there the meta-skill walks the file through
+transcription → speaker selection → forced alignment → vowel
+extraction, pausing at two human-in-the-loop gates so you can correct
+the transcript and verify alignment boundaries in Praat before
+continuing.
+
+In **monolingual** mode the defaults are FAVE/MFA alignment plus
+FAVE-extract — switch to the lightweight path by adding "use the
+WebMAUS backend and the Praat extractor" to the prompt. In
+**bilingual** mode alignment is WebMAUS-only (no MFA model spans two
+languages) and the extractor is forced to the Praat script
+(FAVE-extract is English-only); phone labels default to X-SAMPA and
+you can ask for IPA at the alignment gate. Add "skip the
+confirmation gates" once you've validated the recording end-to-end
+and want to re-run unattended.
 
 ### 3. Run only part of the pipeline
 
@@ -211,22 +244,46 @@ releases. To register one for this repo:
 4. Add both DOIs to `CITATION.cff` and update this section's citation
    to use the concept DOI.
 
-## What v1 supports
+## What this toolkit supports
 
-Monolingual American English interview audio. The user picks two
-options at invocation:
+### Monolingual American English (v1)
+
+The user picks two options at invocation:
 
 - **Alignment backend:** `fave` (Montreal Forced Aligner with the
-  `english_us_arpa` model — ARPA labels, heavier install) or `webmaus`
-  (BAS WebMAUS API — X-SAMPA labels, lightweight install).
+  `english_us_arpa` model — ARPA labels, heavier install) or
+  `webmaus` (BAS WebMAUS API — X-SAMPA labels, lightweight install).
 - **Vowel extractor:** `fave` (FAVE-extract, paired with MFA output —
   canonical 16 columns plus FAVE extras such as Lobanov-normalized
   formants and Plotnik vowel-class labels appended after column 16)
-  or `praat` (headless Praat script, reads either ARPA or X-SAMPA via
-  `references/vowel-sets.yaml`).
+  or `praat` (headless Praat script, reads either ARPA or X-SAMPA
+  via `references/vowel-sets.yaml`).
 
 Both extractors emit the canonical 16-column CSV defined in
 [references/csv-schema.md](references/csv-schema.md).
+
+### Bilingual two-language data (v2)
+
+The meta-skill asks for L1 and L2 at the top. Four pre-set buttons
+cover *(fairly standard) English, Mandarin, Spanish, Russian*; an
+"Other" field accepts any WebMAUS-supported language plus a free-
+text label (handy for regiolects or sociolects). From there:
+
+- **Alignment backend:** WebMAUS only. There is no FAVE/MFA option
+  for bilingual data — no off-the-shelf MFA acoustic model covers
+  two languages at once. WebMAUS receives one call per monologue
+  with the correct `LANGUAGE` set per chunk.
+- **Phone label set:** X-SAMPA by default (matches the existing
+  Praat extractor's `vowel-sets.yaml`), or IPA via
+  `--phone-symbols ipa` (which then needs an IPA inventory added to
+  `vowel-sets.yaml` before extraction).
+- **Vowel extractor:** the Praat script only. FAVE-extract is
+  rejected in bilingual mode.
+- **Voice type:** the same `low` / `high` prompt as in the
+  monolingual path (max formant 5000 vs 5500 Hz).
+
+The output CSV uses the same canonical schema as the monolingual
+path.
 
 ## Verified in v1
 
@@ -256,10 +313,13 @@ Brownsville recording and produced a clean unified transcript.
   VAD-based segmentation before Whisper, or pyannote.audio's
   pretrained pipeline. See `transcribe-en/SKILL.md` →
   *Known limitation — diarization architecture*.
-- **No bilingual support yet.** `--mode en` is the only legal value
-  for v1. Bilingual TxE/TxG support is planned and will reuse
-  `align-en --backend webmaus` (which already supports any WebMAUS
-  language code) plus per-language splitting.
+- **Bilingual path (v2) is documented but not yet end-to-end
+  validated** on a real Texas Spanish/English recording. The
+  monolingual FAVE/MFA path is the only configuration with the May
+  2026 verification batch behind it. Validation runs are planned
+  next. (The `align-en` WebMAUS branch — which `align-bi` mirrors
+  per chunk — also has not yet been end-to-end tested in this
+  verification round.)
 - **WebMAUS branch and Praat extractor branch are coded but not yet
   end-to-end tested** in this verification round. The FAVE/MFA path is
   the only fully validated configuration.
@@ -269,6 +329,8 @@ Brownsville recording and produced a clean unified transcript.
 
 ## Status
 
-v1, English only. The `align-en` WebMAUS backend is the intended
-foundation for v2 bilingual support since WebMAUS already supports
-many languages.
+v2. Monolingual American English (FAVE/MFA + Praat) is fully
+validated; bilingual (WebMAUS + Praat) is documented and ready to
+run but pending end-to-end validation. The two paths share the
+`vowel-extract-en` extractor and the speaker-filter step from
+`transcribe-en`.

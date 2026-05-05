@@ -257,6 +257,46 @@ Compare the fave extractor against the legacy `tell-align-extract`
 output on the same audio + TextGrid: ignoring the canonical-row
 expansion (5x), F1/F2/F3 values should match exactly.
 
+## Use with the bilingual pipeline
+
+`vowel-extract-en` is the only valid extractor when the meta-skill
+runs in `--mode bilingual`. Two practical implications:
+
+- **`--extractor fave` is rejected.** FAVE-extract requires ARPA
+  labels and is English-only. The meta-skill blocks the combination
+  before reaching this skill.
+- **Phone label set comes from `align-bi`.** Default is X-SAMPA
+  (already covered by the `xsampa` block in
+  `references/vowel-sets.yaml`); the user can opt into IPA via
+  `--phone-symbols ipa` on `align-bi`. See "IPA labels" below for
+  the extra step IPA requires.
+
+The `--voice low` / `--voice high` flag is **identical** in
+monolingual and bilingual modes — it controls the Praat max-formant
+ceiling (5000 Hz vs 5500 Hz) and the same gate-1 prompt that asked
+for it in the English path runs verbatim in the bilingual path.
+
+### IPA labels
+
+If `align-bi` was run with `--phone-symbols ipa`, the phone tier
+contains IPA characters (`iː`, `æ`, `ɑ`, `ə`, `tʃ`, `β`, …). The
+shipped `references/vowel-sets.yaml` only has `arpa` and `xsampa`
+inventories — IPA labels won't match any of those. Two options:
+
+1. **Add an `ipa` block to `vowel-sets.yaml`** listing the IPA vowel
+   symbols for the languages in the recording, then call the Praat
+   extractor with `--phoneset ipa` (the script's phoneset detector
+   falls through to whichever block matches the dominant label
+   pattern).
+2. **Stay in X-SAMPA.** Re-run `align-bi` with `--phone-symbols
+   xsampa` (the default). For most projects this is the path of
+   least resistance — X-SAMPA is ASCII, the inventory is already in
+   `vowel-sets.yaml`, and the Praat extractor handles it without
+   any setup.
+
+The meta-skill surfaces this trade-off at gate 2 so the user can
+decide before vowel extraction begins.
+
 ## Notes
 
 - The Praat extractor takes ~1–2 minutes for a 30-min interview on
